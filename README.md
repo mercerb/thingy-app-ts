@@ -1,5 +1,4 @@
-This is a React web app (written in Typescript) that grabs weather data for Brooklyn, NY, US from the openweathermap.org API.  
-The data is sent from the API response to the home component with a publish / subscribe architecture powered by PubNub. It has support for Plotly and D3 graphs to visualize the data. In the future, it will publish data from other realtime data streams as well. Specifically, I hope to add environmental data from a Nordic Thingy. 
+This is a React web app (written in Typescript) that grabs weather data for Brooklyn, NY, US from the openweathermap.org API. The data is sent from the API response to the home component with a publish / subscribe architecture powered by PubNub. It has support for Plotly and D3 graphs to visualize the data. In the future, it will publish data from other realtime data streams as well. Specifically, I hope to add environmental data from a Nordic Thingy. 
 
 ## From React: 
 
