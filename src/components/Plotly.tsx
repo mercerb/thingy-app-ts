@@ -11,12 +11,11 @@ interface IState {
   weatherData: number;
   data: any;
   layout: any;
+  frames: any;
 }
 
 export default class Plotly extends React.Component<IProps, IState> {
-  width: 960;
-  height: 500;
-  title: 'Test Plot';
+  title: 'Realtime Humidity in Brooklyn from OpenWeatherAPI';
   timer: any;
   x: any[];
   y: any[];
@@ -26,8 +25,9 @@ export default class Plotly extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    this.x = [0, 0];
-    this.y = [0, 0];
+    let initialDate = Date.now();
+    this.x = [initialDate, initialDate + 1];
+    this.y = [50, 50];
 
     this.state = {
       weatherData: 0,
@@ -43,7 +43,7 @@ export default class Plotly extends React.Component<IProps, IState> {
         height: 500,
         autoSize: true,
         staticPlot: false,
-        title: 'Test Plot',
+        title: 'Brooklyn Humidity: Realtime',
         xaxis: {
           title: 'Timestamp',
         },
@@ -52,6 +52,7 @@ export default class Plotly extends React.Component<IProps, IState> {
           range: [0, 100],
         },
       },
+      frames: [],
     };
 
     this.setGraphData = this.setGraphData.bind(this);
@@ -65,7 +66,20 @@ export default class Plotly extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    this.timer = setInterval(this.tick, 10000); // update every 10 seconds
+    this.timer = setInterval(() => {
+      let newRealtimeData = [...this.state.data];
+      newRealtimeData[0].x.push(Date.now());
+      newRealtimeData[0].y.push(this.state.weatherData);
+      console.log('shallow check', newRealtimeData[0].x === this.state.data[0].x);
+
+      const newLayout = Object.assign({}, this.state.layout);
+      newLayout.datarevision++;
+      this.setState({ data: newRealtimeData, layout: newLayout });
+      console.log('setting new graph state');
+    }, 2000); // updates every 2 seconds
+    this.timer = setInterval(() => {
+      this.tick();
+    }, 2000); // updates every 2 seconds
   }
 
   componentWillUnmount() {
@@ -79,6 +93,7 @@ export default class Plotly extends React.Component<IProps, IState> {
     });
   }
 
+  // @ts-ignore
   tick() {
     let data = this.state.data;
     let x = data[0].x.slice();
@@ -101,8 +116,11 @@ export default class Plotly extends React.Component<IProps, IState> {
   render() {
     return (
       <Plot
+        style={{ width: '100%', height: '100%' }}
+        useResizeHandler={true}
         data={this.state.data}
         layout={this.state.layout}
+        frames={this.state.frames}
         onInitialized={(figure) => this.setState(figure)}
         onUpdate={(figure) => { this.setState(figure); }}
       />

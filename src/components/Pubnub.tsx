@@ -88,7 +88,7 @@ export default class Pubnub extends Component<IProps, IState> {
             channel: 'channel1',
           });
 
-          await SleepUtil.SleepAsync(10000); // sleep 10 seconds
+          await SleepUtil.SleepAsync(2000); // sleep 2 seconds
         }
     }
 
