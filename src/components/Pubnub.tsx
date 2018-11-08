@@ -55,12 +55,12 @@ export default class Pubnub extends Component<IProps, IState> {
             console.log(msg);
         });
 
-        this.pubnub.getStatus((st: any) => {
-            this.pubnub.publish({
-                message: 'initial message',
-                channel: 'channel1',
-            });
-        });
+        // this.pubnub.getStatus((st: any) => {
+        //     this.pubnub.publish({
+        //         message: 'initial message', // looks bad
+        //         channel: 'channel1',
+        //     });
+        // });
 
         this.publishForever(); // don't await because it runs forever
     }
@@ -82,13 +82,13 @@ export default class Pubnub extends Component<IProps, IState> {
         while (true) {
           // let time = (Date.now()).toString(); // just print timestamp for testing
           let time = (new Date()).toTimeString();
-          let msg = time.split(' ')[0] + ': Current humidity in Brooklyn: ' + this.state.dataToPublish.toString();
+          let msg = time.split(' ')[0] + ': Current humidity (%) in Brooklyn is ' + this.state.dataToPublish.toString();
           this.pubnub.publish({
             message: msg,
             channel: 'channel1',
           });
 
-          await SleepUtil.SleepAsync(5000); // sleep 5 seconds
+          await SleepUtil.SleepAsync(10000); // sleep 10 seconds
         }
     }
 
@@ -96,7 +96,7 @@ export default class Pubnub extends Component<IProps, IState> {
         const messages = this.pubnub.getMessage('channel1');
         return (
             <div>
-                <Plotly />
+                <Plotly {...this.state.dataToPublish}/>
                 <ul>
                     {messages.map((m: any, index: any) => <li key={'message' + index}>{m.message}</li>)}
                 </ul>
