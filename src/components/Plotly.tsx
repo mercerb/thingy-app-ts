@@ -43,7 +43,7 @@ export default class Plotly extends React.Component<IProps, IState> {
         height: 500,
         autoSize: true,
         staticPlot: false,
-        title: 'Brooklyn Humidity: Realtime',
+        title: 'Brooklyn Humidity: Realtime Data Stream',
         xaxis: {
           title: 'Timestamp',
         },
@@ -56,7 +56,6 @@ export default class Plotly extends React.Component<IProps, IState> {
     };
 
     this.setGraphData = this.setGraphData.bind(this);
-    this.tick = this.tick.bind(this);
 
     this.apiService = new ApiService({
       functions: {
@@ -68,17 +67,18 @@ export default class Plotly extends React.Component<IProps, IState> {
   componentDidMount() {
     this.timer = setInterval(() => {
       let newRealtimeData = [...this.state.data];
-      newRealtimeData[0].x.push(Date.now());
+      let date = Date.now();
+      // let dateStr = (new Date()).toTimeString();
+      newRealtimeData[0].x.push(date);
       newRealtimeData[0].y.push(this.state.weatherData);
-      console.log('shallow check', newRealtimeData[0].x === this.state.data[0].x);
 
       const newLayout = Object.assign({}, this.state.layout);
       newLayout.datarevision++;
       this.setState({ data: newRealtimeData, layout: newLayout });
-      console.log('setting new graph state');
-    }, 2000); // updates every 2 seconds
-    this.timer = setInterval(() => {
-      this.tick();
+
+      console.log(`Plotly.update() - x is now ${newRealtimeData[0].x.slice()}`);
+      console.log(`Plotly.update() - y is now ${newRealtimeData[0].y.slice()}`);
+
     }, 2000); // updates every 2 seconds
   }
 
@@ -91,26 +91,6 @@ export default class Plotly extends React.Component<IProps, IState> {
     await this.setState({
       weatherData: humidity,
     });
-  }
-
-  // @ts-ignore
-  tick() {
-    let data = this.state.data;
-    let x = data[0].x.slice();
-    let y = data[0].y.slice();
-
-    x.push(Date.now());
-    y.push(this.state.weatherData);
-
-    data[0].x = x;
-    data[0].y = y;
-
-    this.setState({
-      data: data,
-    });
-
-    console.log(`Plotly.tick() - x is ${x}`);
-    console.log(`Plotly.tick() - y is ${y}`);
   }
 
   render() {
